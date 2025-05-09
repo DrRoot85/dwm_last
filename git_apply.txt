@@ -1,0 +1,4 @@
+git apply --ignore-space-change --ignore-whitespace 
+
+
+git apply --reject --whitespace=fix 
