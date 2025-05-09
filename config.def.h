@@ -22,7 +22,14 @@ static char selbgcolor[]            = "#005577";
 static char *colors[][3] = {
        /*               fg           bg           border   */
        [SchemeNorm] = { normfgcolor, normbgcolor, normbordercolor },
-       [SchemeSel]  = { selfgcolor,  selbgcolor,  selbordercolor  },
+       // [SchemeSel]  = { selfgcolor,  selbgcolor,  selbordercolor  },
+	[SchemeSel]  = { selbgcolor,  selfgcolor,  selbordercolor  },
+	/* for bar --> {text, background, null} */
+	[SchemeStatus]  = { normfgcolor, normbgcolor,  normbgcolor  }, /* status R */
+	[SchemeTagsSel]  = { normfgcolor, normbgcolor,  normbgcolor  }, /* tag L selected */
+	[SchemeTagsNorm]  = { selbordercolor, normbgcolor,  normbgcolor  }, /* tag L unselected */
+	[SchemeInfoSel]  = { normfgcolor, normbgcolor,  normbgcolor  }, /* info M selected */
+	[SchemeInfoNorm]  = { normfgcolor, normbgcolor,  normbgcolor  }, /* info M unselected */
 };
 
 /* tagging */
