@@ -13,8 +13,8 @@ all: dwm
 
 ${OBJ}: config.h config.mk
 
-config.h:
-	cp config.def.h $@
+# config.h:
+# 	cp config.def.h $@
 
 dwm: ${OBJ}
 	${CC} -o $@ ${OBJ} ${LDFLAGS}
