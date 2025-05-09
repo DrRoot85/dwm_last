@@ -43,6 +43,7 @@
 #endif /* XINERAMA */
 #include <X11/Xft/Xft.h>
 #include <X11/Xlib-xcb.h>
+#include <X11/XF86keysym.h>
 #include <xcb/res.h>
 #ifdef __OpenBSD__
 #include <sys/sysctl.h>
@@ -204,6 +205,11 @@ struct Systray {
 	Window win;
 	Client *icons;
 };
+
+typedef struct {
+	const char** command;
+	const char* name;
+} Launcher;
 
 
 /* function declarations */
@@ -627,9 +633,29 @@ buttonpress(XEvent *e)
 		if (i < LENGTH(tags) && selmon->showtags) {
 			click = ClkTagBar;
 			arg.ui = 1 << i;
-		} else if (ev->x < x + TEXTW(selmon->ltsymbol) && selmon->showlayout)
+			// blw = TEXTW(selmon->ltsymbol) && selmon->showlayout;
+			// blw = m->showlayout ? TEXTW(m->ltsymbol) : 0;
+			goto execute_handler;
+		} else if (ev->x < x + TEXTW(selmon->ltsymbol) && selmon->showlayout) {
 			click = ClkLtSymbol;
-		else if (ev->x > selmon->ww - statusw - getsystraywidth() && selmon->showstatus ) {
+			goto execute_handler;
+		}
+
+		x += TEXTW(selmon->ltsymbol) && selmon->showlayout;
+
+		for(i = 0; i < LENGTH(launchers); i++) {
+			x += TEXTW(launchers[i].name);
+			
+			if (ev->x < x) {
+				Arg a;
+				a.v = launchers[i].command;
+				spawn(&a);
+				return;
+			}
+		}	
+
+		
+		if (ev->x > selmon->ww - statusw - getsystraywidth() && selmon->showstatus ) {
 			x = selmon->ww - statusw;
 			click = ClkStatusText;
 			statussig = 0;
@@ -657,6 +683,9 @@ buttonpress(XEvent *e)
 		XAllowEvents(dpy, ReplayPointer, CurrentTime);
 		click = ClkClientWin;
 	}
+
+execute_handler:
+
 	for (i = 0; i < LENGTH(buttons); i++)
 		if (click == buttons[i].click && buttons[i].func && buttons[i].button == ev->button
 		&& CLEANMASK(buttons[i].mask) == CLEANMASK(ev->state))
@@ -1059,6 +1088,13 @@ drawbar(Monitor *m)
 	drw_setscheme(drw, scheme[SchemeTagsNorm]);
 	x = drw_text(drw, x, 0, w, bh, lrpad / 2, m->ltsymbol, 0);
 
+	
+	for (i = 0; i < LENGTH(launchers); i++)
+	{
+		w = TEXTW(launchers[i].name);
+		drw_text(drw, x, 0, w, bh, lrpad / 2, launchers[i].name, urg & 1 << i);
+		x += w;
+	}
 	// if ((w = m->ww - tw - x) > bh) {
 	if ((w = m->ww - tw - stw - x) > bh) {
 		if (m->sel) {
