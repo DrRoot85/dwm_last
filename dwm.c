@@ -251,6 +251,7 @@ static void showhide(Client *c);
 static void sigstatusbar(const Arg *arg);
 static void spawn(const Arg *arg);
 static void tag(const Arg *arg);
+static void spawntag(const Arg *arg);
 static void tagmon(const Arg *arg);
 static void togglebar(const Arg *arg);
 static void togglebartags(const Arg *arg);
@@ -2030,6 +2031,19 @@ tag(const Arg *arg)
 		setclienttagprop(c);
 		focus(NULL);
 		arrange(selmon);
+	}
+}
+
+void
+spawntag(const Arg *arg)
+{
+	if (arg->ui & TAGMASK) {
+		for (int i = LENGTH(tags); i >= 0; i--) {
+			if (arg->ui & 1<<i) {
+				spawn(&tagexec[i]);
+				return;
+			}
+		}
 	}
 }
 
