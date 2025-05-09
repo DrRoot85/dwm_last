@@ -28,7 +28,7 @@ BDLIBS = -lfribidi
 
 # includes and libs
 INCS = -I${X11INC} -I${FREETYPEINC} -I$(BDINC)
-LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS} ${FREETYPELIBS} $(BDLIBS) -lX11-xcb -lxcb -lxcb-res ${KVMLIB}
+LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS} ${FREETYPELIBS} $(BDLIBS) -lX11-xcb -lxcb -lxcb-res ${KVMLIB}  -lXrender -lImlib2
 
 # flags
 CPPFLAGS = -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_XOPEN_SOURCE=700L -DVERSION=\"${VERSION}\" ${XINERAMAFLAGS}
