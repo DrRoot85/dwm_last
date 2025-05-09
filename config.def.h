@@ -10,6 +10,11 @@ static const unsigned int gappov    = 30;       /* vert outer gap between window
 static       int smartgaps          = 0;        /* 1 means no outer gap when there is only one window */
 static const int swallowfloating    = 0;        /* 1 means swallow floating windows by default */
 static const int showbar            = 1;        /* 0 means no bar */
+static const int showtitle          = 1;        /* 0 means no title */
+static const int showtags           = 1;        /* 0 means no tags */
+static const int showlayout         = 1;        /* 0 means no layout indicator */
+static const int showstatus         = 1;        /* 0 means no status bar */
+static const int showfloating       = 1;        /* 0 means no floating indicator */
 static const int topbar             = 1;        /* 0 means bottom bar */
 static const char *fonts[]          = { "monospace:size=10" };
 static const char dmenufont[]       = "monospace:size=10";
@@ -133,6 +138,11 @@ static const Key keys[] = {
 	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
 	{ MODKEY,                       XK_space,  setlayout,      {0} },
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
+	{ MODKEY,					    XK_t,      togglebartitle, {0} },
+	{ MODKEY,                       XK_s,      togglebarstatus,{0} },
+	{ MODKEY|ShiftMask,             XK_t,      togglebartags,  {0} },
+	{ MODKEY|ShiftMask,				XK_s,      togglebarlt,    {0} },
+	{ MODKEY|ShiftMask,				XK_f,      togglebarfloat, {0} },
 	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
 	{ MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } },
 	{ MODKEY,                       XK_comma,  focusmon,       {.i = -1 } },

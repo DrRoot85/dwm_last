@@ -152,6 +152,11 @@ struct Monitor {
 	unsigned int sellt;
 	unsigned int tagset[2];
 	int showbar;
+	int showtitle;
+	int showtags;
+	int showlayout;
+	int showstatus;
+	int showfloating;
 	int topbar;
 	Client *clients;
 	Client *sel;
@@ -246,6 +251,11 @@ static void spawn(const Arg *arg);
 static void tag(const Arg *arg);
 static void tagmon(const Arg *arg);
 static void togglebar(const Arg *arg);
+static void togglebartags(const Arg *arg);
+static void togglebartitle(const Arg *arg);
+static void togglebarlt(const Arg *arg);
+static void togglebarstatus(const Arg *arg);
+static void togglebarfloat(const Arg *arg);
 static void togglefloating(const Arg *arg);
 static void toggletag(const Arg *arg);
 static void toggleview(const Arg *arg);
@@ -554,14 +564,15 @@ buttonpress(XEvent *e)
 			/* Do not reserve space for vacant tags */
 			if (!(occ & 1 << i || m->tagset[m->seltags] & 1 << i))
 				continue;
-			x += TEXTW(tags[i]);
+			if (selmon->showtags)
+				x += TEXTW(tags[i]);
 		} while (ev->x >= x && ++i < LENGTH(tags));
-		if (i < LENGTH(tags)) {
+		if (i < LENGTH(tags) && selmon->showtags) {
 			click = ClkTagBar;
 			arg.ui = 1 << i;
-		} else if (ev->x < x + TEXTW(selmon->ltsymbol))
+		} else if (ev->x < x + TEXTW(selmon->ltsymbol) && selmon->showlayout)
 			click = ClkLtSymbol;
-		else if (ev->x > selmon->ww - statusw) {
+		else if (ev->x > selmon->ww - statusw && selmon->showstatus) {
 			x = selmon->ww - statusw;
 			click = ClkStatusText;
 			statussig = 0;
@@ -581,7 +592,7 @@ buttonpress(XEvent *e)
 						statussig = ch;
 				}
 			}
-		} else
+		} else if (selmon->showtitle)
 			click = ClkWinTitle;
 	} else if ((c = wintoclient(ev->window))) {
 		focus(c);
@@ -778,6 +789,11 @@ createmon(void)
 	m->mfact = mfact;
 	m->nmaster = nmaster;
 	m->showbar = showbar;
+	m->showtitle = showtitle;
+	m->showtags = showtags;
+	m->showlayout = showlayout;
+	m->showstatus = showstatus;
+	m->showfloating = showfloating;
 	m->topbar = topbar;
 	m->gappih = gappih;
 	m->gappiv = gappiv;
@@ -1487,7 +1503,7 @@ propertynotify(XEvent *e)
 		}
 		if (ev->atom == XA_WM_NAME || ev->atom == netatom[NetWMName]) {
 			updatetitle(c);
-			if (c == c->mon->sel)
+			if (c == c->mon->sel && selmon->showtitle)
 				drawbar(c->mon);
 		}
 		if (ev->atom == netatom[NetWMWindowType])
@@ -1976,6 +1992,41 @@ togglebar(const Arg *arg)
 	selmon->showbar = !selmon->showbar;
 	updatebarpos(selmon);
 	XMoveResizeWindow(dpy, selmon->barwin, selmon->wx, selmon->by, selmon->ww, bh);
+	arrange(selmon);
+}
+
+void
+togglebartags(const Arg *arg)
+{
+    selmon->showtags = !selmon->showtags;
+	arrange(selmon);
+}
+
+void
+togglebartitle(const Arg *arg)
+{
+    selmon->showtitle = !selmon->showtitle;
+	arrange(selmon);
+}
+
+void
+togglebarlt(const Arg *arg)
+{
+    selmon->showlayout = !selmon->showlayout;
+	arrange(selmon);
+}
+
+void
+togglebarstatus(const Arg *arg)
+{
+    selmon->showstatus = !selmon->showstatus;
+	arrange(selmon);
+}
+
+void
+togglebarfloat(const Arg *arg)
+{
+    selmon->showfloating = !selmon->showfloating;
 	arrange(selmon);
 }
 
